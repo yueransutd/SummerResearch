@@ -14,6 +14,7 @@ import sys
 from utils import *
 from loader import *
 from model import BiLSTM_CRF
+import pdb
 t = time.time()
 models_path = "models/"
 
@@ -114,6 +115,10 @@ optparser.add_option(
     '--char_mode', choices=['CNN', 'LSTM'], default='CNN',
     help='char_CNN or char_LSTM'
 )
+optparser.add_option(
+    '--feats_file', default='./evaluation/temp',
+    help='save features to file'
+)
 opts = optparser.parse_args()[0]
 
 parameters = OrderedDict()
@@ -134,6 +139,7 @@ parameters['dropout'] = opts.dropout
 parameters['reload'] = opts.reload == 1
 parameters['name'] = opts.name
 parameters['char_mode'] = opts.char_mode
+parameters['feats_file'] = opts.feats_file
 
 parameters['use_gpu'] = opts.use_gpu == 1 and torch.cuda.is_available()
 use_gpu = parameters['use_gpu']
@@ -171,6 +177,7 @@ dev_sentences = loader.load_sentences(opts.dev, lower, zeros)
 test_sentences = loader.load_sentences(opts.test, lower, zeros)
 test_train_sentences = loader.load_sentences(opts.test_train, lower, zeros)
 
+
 update_tag_scheme(train_sentences, tag_scheme)
 update_tag_scheme(dev_sentences, tag_scheme)
 update_tag_scheme(test_sentences, tag_scheme)
@@ -204,7 +211,6 @@ test_train_data = prepare_dataset(
 
 print("%i / %i / %i sentences in train / dev / test." % (
     len(train_data), len(dev_data), len(test_data)))
-
 all_word_embeds = {}
 for i, line in enumerate(codecs.open(opts.pre_emb, 'r', 'utf-8')):
     s = line.strip().split()
@@ -258,16 +264,24 @@ all_F = [[0, 0, 0]]
 plot_every = 10
 eval_every = 20
 count = 0
+
 #vis = visdom.Visdom()
 sys.stdout.flush()
 
+#def write..()
+#    with open('ab')...
 
 def evaluating(model, datas, best_F):
+    ind = 0
     prediction = []
     save = False
     new_F = 0.0
     confusion_matrix = torch.zeros((len(tag_to_id) - 2, len(tag_to_id) - 2))
+    max_len = max([len(s['words']) for s in datas]) #60
+    #print(get_true_len(datas))
+    list_feats = []
     for data in datas:
+        ind +=1
         ground_truth_id = data['tags']
         words = data['str_words']
         chars2 = data['chars']
@@ -303,7 +317,21 @@ def evaluating(model, datas, best_F):
             val, out, feats = model(dwords.cuda(), chars2_mask.cuda(), dcaps.cuda(), chars2_length, d)
         else:
             val, out, feats = model(dwords, chars2_mask, dcaps, chars2_length, d)
-        print(feats)
+        #pdb.set_trace()
+        #m = nn.ConstantPad2d((0,0,0,max_len-len(data['words'])), 0)
+        #print(m(feats))
+        list_feats.append(feats)
+       
+        # the last batch of features
+        if ind == len(datas):
+            print("save "+ str(ind))
+            write_feats_to_file(parameters['feats_file']+'/feats.txt', list_feats)
+        # save to file every 1000 features
+        elif ind %1000 == 0:
+            print("save "+ str(ind))
+            write_feats_to_file(parameters['feats_file']+'/feats.txt', list_feats)
+            list_feats=[]
+
         predicted_id = out
         for (word, true_id, pred_id) in zip(words, ground_truth_id, predicted_id):
             line = ' '.join([word, id_to_tag[true_id], id_to_tag[pred_id]])

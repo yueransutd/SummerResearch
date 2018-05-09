@@ -9,6 +9,7 @@ import model
 import string
 import random
 import numpy as np
+import torch
 
 
 def unicodeToAscii(s):
@@ -314,7 +315,11 @@ def random_batch(batch_size, train_data, singletons=[]):
 
     return input_padded, input_lengths, target_padded, target_lengths, chars2_seqs_padded, chars2_seqs_lengths
 
-
+def get_true_len(datas):
+    a = torch.zeros([len(datas), 1])
+    for i in range(len(datas)):
+        a[i] = len(datas[i]['words'])
+    return a
 
 
 

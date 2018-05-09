@@ -2,6 +2,7 @@ import torch
 import torch.autograd as autograd
 from torch.autograd import Variable
 from utils import *
+import torch.nn as nn
 
 START_TAG = '<START>'
 STOP_TAG = '<STOP>'

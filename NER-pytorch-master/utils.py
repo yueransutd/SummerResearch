@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 import re
 import numpy as np
+import pickle
 
 
 models_path = "./models"
@@ -266,4 +267,7 @@ def init_lstm(input_lstm):
                 weight.data.zero_()
                 weight.data[input_lstm.hidden_size: 2 * input_lstm.hidden_size] = 1
 
+def write_feats_to_file(file_name, list_feats):
+    with open(file_name, 'ab') as f:
+        pickle.dump(list_feats, f)
 
