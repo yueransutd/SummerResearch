@@ -144,12 +144,14 @@ train_sentences = loader.load_sentences(opts.train, lower, zeros)
 dev_sentences = loader.load_sentences(opts.dev, lower, zeros)
 test_sentences = loader.load_sentences(opts.test, lower, zeros)
 test_train_sentences = loader.load_sentences(opts.test_train, lower, zeros)
+test_single_out_sentences = loader.load_sentences("./dataset/new_single_out.txt", lower, zeros)
 
 name = parameters['name']
 update_tag_scheme(train_sentences, tag_scheme)
 update_tag_scheme(dev_sentences, tag_scheme)
 update_tag_scheme(test_sentences, tag_scheme)
 update_tag_scheme(test_train_sentences, tag_scheme)
+update_tag_scheme(test_single_out_sentences, tag_scheme)
 
 dico_words_train = word_mapping(train_sentences, lower)[0]
 
@@ -176,6 +178,10 @@ test_data = prepare_dataset(
 test_train_data = prepare_dataset(
     test_train_sentences, word_to_id, char_to_id, tag_to_id, lower
 )
+test_single_out_data = prepare_dataset(
+    test_single_out_sentences, word_to_id, char_to_id, tag_to_id, lower
+)
+
 
 
 all_word_embeds = {}
@@ -252,27 +258,27 @@ def label(model, datas):
         dwords = Variable(torch.LongTensor(data['words']))
         dcaps = Variable(torch.LongTensor(caps))
         if use_gpu:
-            val, out = model(dwords.cuda(), chars2_mask.cuda(), dcaps.cuda(), chars2_length, d)
+            val, out, feats = model(dwords.cuda(), chars2_mask.cuda(), dcaps.cuda(), chars2_length, d)
         else:
-            val, out = model(dwords, chars2_mask, dcaps, chars2_length, d)
+            val, out, feats = model(dwords, chars2_mask, dcaps, chars2_length, d)
         predicted_id = out
         for (word, pred_id) in zip(words, predicted_id):
             line = ' '.join([word, id_to_tag[pred_id]])
             prediction.append(line)
         prediction.append('')
-    predf = eval_temp + '/labeled_test_train_data.' + name
+    predf = eval_temp + '/labeled_single_out.txt'
     
     print("saving to file...")
-    with open(predf, 'w') as f:
+    with open(predf, 'w', encoding = 'utf-8-sig') as f:
         f.write('\n'.join(prediction))
-#label(model, test_train_data)
-#print("finish labeling")
+label(model, test_single_out_data)
+print("finish labeling")
 #print(time.time()-t)
 
-def get_true_length(sentences):
+'''def get_true_length(sentences):
     a = torch.zeros([len(sentences), 1])
     for i in range(len(sentences)):
         a[i] = len(sentences[i])
-    return a
+    return a'''
 #print(get_true_length(test_train_sentences))
 
