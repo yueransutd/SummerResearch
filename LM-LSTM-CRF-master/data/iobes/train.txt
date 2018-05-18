@@ -1,3 +1,5 @@
+-DOCSTART- -X- 0 0
+
 EU NNP I-NP S-ORG
 rejects VBZ I-VP O
 German JJ I-NP S-MISC
