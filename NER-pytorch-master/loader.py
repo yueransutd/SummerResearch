@@ -19,6 +19,9 @@ def unicodeToAscii(s):
         and c in string.ascii_letters + " .,;'-"
     )
 
+def get_tot_length(path):
+    return (len(open(path, 'r', encoding = 'utf-8').readlines()))
+
 def load_sentences(path, lower, zeros):
     """
     Load sentences. A line must contain at least a word and its tag.
@@ -42,6 +45,39 @@ def load_sentences(path, lower, zeros):
         if 'DOCSTART' not in sentence[0][0]:
             sentences.append(sentence)
     return sentences
+
+def load_sentences2(path, lower, zeros, line_idx):
+    """
+    Load sentences. A line must contain at least a word and its tag.
+    Sentences are separated by empty lines.
+    """
+    sentences = []
+    sentence = []
+    # return every 10000 sentences
+    read_lines= open(path, 'r', encoding = 'utf-8').readlines()
+    leng = get_tot_length(path)
+    while len(sentences)< 300 and line_idx < leng:
+        line = read_lines[line_idx]
+        line = zero_digits(line.rstrip()) if zeros else line.rstrip()
+        
+        if not line:
+            if len(sentence) > 0:
+                if 'DOCSTART' not in sentence[0][0]:
+                    sentences.append(sentence)
+                sentence = []
+        else:
+            word = line.split()
+            assert len(word) >= 2
+            sentence.append(word)
+        line_idx+= 1
+
+    if len(sentence) > 0:
+        if 'DOCSTART' not in sentence[0][0]:
+            sentences.append(sentence)
+    
+    print(line_idx)
+
+    return sentences, line_idx
 
 
 def update_tag_scheme(sentences, tag_scheme):

@@ -9,6 +9,7 @@ import time
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
 import sys
+import pdb
 from utils import *
 from loader import *
 from model import BiLSTM_CRF
@@ -144,14 +145,13 @@ train_sentences = loader.load_sentences(opts.train, lower, zeros)
 dev_sentences = loader.load_sentences(opts.dev, lower, zeros)
 test_sentences = loader.load_sentences(opts.test, lower, zeros)
 test_train_sentences = loader.load_sentences(opts.test_train, lower, zeros)
-test_single_out_sentences = loader.load_sentences("./dataset/new_single_out.txt", lower, zeros)
+
 
 name = parameters['name']
 update_tag_scheme(train_sentences, tag_scheme)
 update_tag_scheme(dev_sentences, tag_scheme)
 update_tag_scheme(test_sentences, tag_scheme)
 update_tag_scheme(test_train_sentences, tag_scheme)
-update_tag_scheme(test_single_out_sentences, tag_scheme)
 
 dico_words_train = word_mapping(train_sentences, lower)[0]
 
@@ -178,9 +178,7 @@ test_data = prepare_dataset(
 test_train_data = prepare_dataset(
     test_train_sentences, word_to_id, char_to_id, tag_to_id, lower
 )
-test_single_out_data = prepare_dataset(
-    test_single_out_sentences, word_to_id, char_to_id, tag_to_id, lower
-)
+
 
 
 
@@ -223,7 +221,6 @@ model, optimizer, current_epoch, other_info = restore_checkpoint(file_name, mode
 print("model loaded")
 sys.stdout.flush()
 
-print("begin labeling")
 def label(model, datas):
     prediction = []
     for data in datas:
@@ -266,12 +263,29 @@ def label(model, datas):
             line = ' '.join([word, id_to_tag[pred_id]])
             prediction.append(line)
         prediction.append('')
-    predf = eval_temp + '/labeled_single_out.txt'
+    return '\n'.join(prediction)
+    #predf = eval_temp + '/labeled_single_out_try.txt'
     
-    print("saving to file...")
-    with open(predf, 'w', encoding = 'utf-8-sig') as f:
-        f.write('\n'.join(prediction))
-label(model, test_single_out_data)
+    #print("saving to file...")
+    #with open(predf, 'w', encoding = 'utf-8-sig') as f:
+        #f.write('\n'.join(prediction))
+
+
+line_idx = 0
+length = loader.get_tot_length('./dataset/new_single_out.txt')
+with open('./evaluation/temp/labeled_single_out_try.txt', 'w', encoding = 'utf-8-sig') as f:
+    while line_idx< length:
+        test_single_out_sentences, new_line_idx = loader.load_sentences2("./dataset/new_single_out.txt", lower, zeros, line_idx)
+        print("loaded 300 sentencess "+ str(float(new_line_idx)/length))
+        line_idx = new_line_idx
+        update_tag_scheme(test_single_out_sentences, tag_scheme)
+        test_single_out_data = prepare_dataset(
+            test_single_out_sentences, word_to_id, char_to_id, tag_to_id, lower
+        )
+        print("begin labeling")
+        f.write(label(model, test_single_out_data))
+        print("saved batch")
+
 print("finish labeling")
 #print(time.time()-t)
 

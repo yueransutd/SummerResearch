@@ -14,8 +14,13 @@ def extend_label():
                 w = word[:-1]+" NNP I-NP I-ORG"
                 if len(w)!= 15:
                     b.append(w)
+                else:
+                    b.append("zzzzz")
         for ww in b:
-            oup+= ww+"\n"
+            if ww!= "zzzzz":
+                oup+= ww+"\n"
+            else:
+                oup+= "\n"
     with open("./dataset/new_single_out.txt", "w", encoding = "utf8") as fi:
         fi.write(oup)
 
@@ -30,6 +35,6 @@ def extend_middle_label():
     with open("./dataset/new_test.txt", "w", encoding = "utf8") as fi:
         fi.write(oup)
 
-extend_middle_label()
+extend_label()
 
 
