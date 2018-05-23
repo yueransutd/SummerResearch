@@ -30,7 +30,7 @@ for index, value in enumerate(data):
             #y.append(prev_value)
             continue
 
-plt.title(sheet)
+
 plt.plot(x,y)
 plt.show()
 
