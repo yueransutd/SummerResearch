@@ -53,10 +53,12 @@ def load_sentences2(path, lower, zeros, line_idx):
     """
     sentences = []
     sentence = []
-    # return every 10000 sentences
-    read_lines= open(path, 'r', encoding = 'utf-8').readlines()
+    start_line_idx = line_idx
+    # return every 300 sentences
+    read_lines = open(path, 'r', encoding = 'utf-8').readlines()
     leng = get_tot_length(path)
-    while len(sentences)< 300 and line_idx < leng:
+    #while len(sentences)< 300 and line_idx < leng:
+    while line_idx -start_line_idx <= 10000:
         line = read_lines[line_idx]
         line = zero_digits(line.rstrip()) if zeros else line.rstrip()
         
@@ -75,8 +77,6 @@ def load_sentences2(path, lower, zeros, line_idx):
         if 'DOCSTART' not in sentence[0][0]:
             sentences.append(sentence)
     
-    print(line_idx)
-
     return sentences, line_idx
 
 
@@ -225,7 +225,7 @@ def augment_with_pretrained(dictionary, ext_emb_path, words):
     # Load pretrained embeddings from file
     pretrained = set([
         line.rstrip().split()[0].strip()
-        for line in codecs.open(ext_emb_path, 'r', 'utf-8')
+        for line in codecs.open(ext_emb_path, 'r', 'utf-8', errors='ignore')
         if len(ext_emb_path) > 0
     ])
 

@@ -34,6 +34,7 @@ class predict:
             self.decode_str = self.decode_l
         else:
             self.decode_str = self.decode_s
+        self.line = ""
 
     def decode_l(self, feature, label):
         """
@@ -58,7 +59,7 @@ class predict:
 
         for f, y in zip(feature, label):
             label = self.r_l_map[y]
-
+            print(f, label)
             if label.startswith('B-'):
 
                 if current is not None:

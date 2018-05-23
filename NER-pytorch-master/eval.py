@@ -3,9 +3,9 @@ from __future__ import print_function
 import optparse
 import torch
 import time
-import cPickle
+import pickle as cPickle
 from torch.autograd import Variable
-
+import pdb
 from loader import *
 from utils import *
 
@@ -83,6 +83,8 @@ test_data = prepare_dataset(
 )
 
 model = torch.load(opts.model_path)
+
+pdb.set_trace()
 model_name = opts.model_path.split('/')[-1].split('.')[0]
 
 if use_gpu:

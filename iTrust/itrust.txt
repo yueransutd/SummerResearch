@@ -1,0 +1,12 @@
+May 18
+1. 5 term, two three line, interested, internship at itrust.
+by today.
+2. measure the hour
+3. libxtract (python lib), feature exaction and selection P49, learn libxtract, download. 
+  feast-- exacted feature sets--> find sth useful (feature selection)
+  matplotlib
+  Pcf
+  svm, random forest. how to distinguish between different sensors/ classification
+  p5 another paper
+  start for using one dataset (csv)
+

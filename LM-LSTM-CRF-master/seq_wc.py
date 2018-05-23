@@ -23,7 +23,7 @@ import pdb
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Evaluating LM-BLSTM-CRF')
     parser.add_argument('--load_arg', default='./checkpoint/ner/ner_3_cwlm_lstm_crf.json', help='path to arg json')
-    parser.add_argument('--load_check_point', default='./checkpoint/ner_3_cwlm_lstm_crf.model', help='path to model checkpoint file')
+    parser.add_argument('--load_check_point', default='./checkpoint/ner/ner_3_cwlm_lstm_crf.model', help='path to model checkpoint file')
     parser.add_argument('--gpu',type=int, default=0, help='gpu id')
     parser.add_argument('--decode_type', choices=['label', 'string'], default='string', help='type of decode function, set `label` to couple label with text, or set `string` to insert label into test')
     parser.add_argument('--batch_size', type=int, default=50, help='size of batch')
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     ner_model.load_state_dict(checkpoint_file['state_dict'])
 
     # save transition here
-    torch.save(str(ner_model.save_transition()), "output_wc.txt")
+    #torch.save(str(ner_model.save_transition()), "output_wc.txt")
 
     pdb.set_trace()
 

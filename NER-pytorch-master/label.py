@@ -223,6 +223,7 @@ sys.stdout.flush()
 
 def label(model, datas):
     prediction = []
+    print("data length "+str(len(datas)))
     for data in datas:
         words = data['str_words']
         chars2 = data['chars']
@@ -272,12 +273,13 @@ def label(model, datas):
 
 
 line_idx = 0
-length = loader.get_tot_length('./dataset/new_single_out.txt')
-with open('./evaluation/temp/labeled_single_out_try.txt', 'w', encoding = 'utf-8-sig') as f:
+length = loader.get_tot_length('./dataset/collected_multi_extend.txt')
+print(length)
+pdb.set_trace()
+with open('./evaluation/temp/labeled_single_out_try.txt', 'w', encoding = 'utf-8') as f:
     while line_idx< length:
         test_single_out_sentences, new_line_idx = loader.load_sentences2("./dataset/new_single_out.txt", lower, zeros, line_idx)
-        print("loaded 300 sentencess "+ str(float(new_line_idx)/length))
-        line_idx = new_line_idx
+        print("loaded 10000 lines "+ str(float(new_line_idx)/length))
         update_tag_scheme(test_single_out_sentences, tag_scheme)
         test_single_out_data = prepare_dataset(
             test_single_out_sentences, word_to_id, char_to_id, tag_to_id, lower
@@ -285,6 +287,7 @@ with open('./evaluation/temp/labeled_single_out_try.txt', 'w', encoding = 'utf-8
         print("begin labeling")
         f.write(label(model, test_single_out_data))
         print("saved batch")
+        line_idx = new_line_idx
 
 print("finish labeling")
 #print(time.time()-t)
